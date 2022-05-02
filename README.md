@@ -40,3 +40,7 @@ sudo npm install
 cd src
 ng serve
 ```
+### Rodando testes
+
+cd test-acceptance
+npm install --save-dev @cucumber/cucumber

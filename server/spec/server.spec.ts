@@ -1,46 +1,63 @@
-import 'jasmine';
+import "jasmine";
 import request = require("request-promise");
-import { closeServer } from '../server';
 
 const baseUrl = "http://localhost:3000";
-const carsUrl = `${baseUrl}/cars`
+
+const adminUrl = `${baseUrl}/promotion/admin`;
+const restUrl = `${baseUrl}/promotion`;
+const badRequests = (403 || 404 || 400);
 
 describe("O servidor", () => {
-  var server:any;
+	var server: any;
 
-  beforeAll(() => {server = require('../server')});
+	beforeAll(() => {
+		server = require("../server");
+	});
 
-  afterAll(() => {server.closeServer()});
+	afterAll(() => {
+		server.closeServer();
+	});
 
-  it("inicialmente retorna uma lista de alunos vazia", () => {
-    return request.get(carsUrl).then(body => expect(body).toBe("[]")).catch(e => expect(e).toEqual(null));
-  })
+	it("Cadastra uma promoção válida no admin", () => {
 
-  it("só cadastra com preco positivo", () => {
-    const body = {
-      name: "Lancer",
-      brand: "Mitsubishi",
-      price: -100,
-      color: "BLACK"
-    }
-    const options:any = {method: 'POST', uri: (carsUrl), body, json: true};
-    return request(options).catch(({ statusCode }) => {
-      expect(statusCode).toBe(400);
-    })
-  });
+		const body = {
+			name: "CUPOMTESTE",
+			status: "Ativo",
+      minValue: 15,
+      discount: 0.5,
+      adm: true
+		};
 
-  it("cadastra carro com sucesso", () => {
-    const body = {
-      name: "Lancer",
-      brand: "Mitsubishi",
-      price: 90,
-      color: "BLACK"
-    }
-    const options :any = {method: 'POST', uri: (carsUrl), body, json: true};
-    const newCar = { id: 0, ...body };
-    return request(options).then(body => {
-         expect(body).toEqual(newCar);
-     });
-  });
+		const options: any = {
+			method: "POST",
+			uri: adminUrl,
+			body,
+			json: true,
+		};
 
-})
+		return request(options).catch(({ res }) => {
+			expect(res.status).toBe(201);
+		});
+	});
+
+	it("Cadastra uma promoção inválida no admin", () => {
+		const body = {
+			name: "100OFF",
+			status: "Ativo",
+      minValue: 15,
+      discount: 1
+		};
+
+		const options: any = {
+			method: "POST",
+			uri: adminUrl,
+			body,
+			json: true,
+		};
+
+		return request(options).catch(({ res }) => {
+			expect(res.status).toBe(badRequests);
+		});
+	});
+
+});

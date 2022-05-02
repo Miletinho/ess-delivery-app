@@ -69,7 +69,7 @@ routes.get('/promotion/admin/:id', function(req, res){
   const id = req.params.id;
   const coupon = adminService.getByName(id);
   if (coupon) {
-    res.send(coupon);
+    res.status(201).send(coupon);
   } else {
     res.status(404).send({ message: ` Coupon ${id} could not be found`});
   }
@@ -203,7 +203,7 @@ routes.put('/promotion/restaurants/:rest/:id', function (req, res) {
   const message = `Coupon ${id} has been updated.`;
   
   if (result) {
-    res.send(restaurants[index].coupons);
+    res.status(201).send(restaurants[index].coupons);
     updateRestaurantsFile();
     console.log(message);
   } else {
